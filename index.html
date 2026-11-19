@@ -23,6 +23,9 @@ h1,h2,h3{font-family:'Baloo 2',cursive;margin:.2em 0;line-height:1.1}
 .app{max-width:1100px;margin:0 auto;padding:12px 12px 40px;position:relative}
 
 .topo{display:flex;align-items:center;gap:10px;background:#fff;border-radius:18px;padding:8px 12px;box-shadow:var(--sombra);position:sticky;top:6px;z-index:20}
+body:fullscreen,html:fullscreen body{background:linear-gradient(180deg,#bfe7ff 0%,#e6f7ff 45%,#f7f0d8 100%)}
+:fullscreen{overflow:auto}
+#btnEcra.on{background:var(--amarelo)}
 .topo .btn-ic{border:none;background:var(--verde-cla);border-radius:12px;width:42px;height:42px;font-size:20px;flex:none}
 .nivel{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 .nivel .emoji{font-size:28px}
@@ -201,6 +204,7 @@ h1,h2,h3{font-family:'Baloo 2',cursive;margin:.2em 0;line-height:1.1}
     <span class="xp" id="xpTxt">0 XP</span>
     <span class="ovos" title="Fósseis na caderneta">🦴 <span id="fosseisTxt">0</span>/<span id="totalTxt">14</span></span>
     <button class="btn-ic" id="btnSom" title="Som" aria-label="Ligar ou desligar o som">🔊</button>
+    <button class="btn-ic" id="btnEcra" title="Ecrã completo" aria-label="Ecrã completo">⛶</button>
   </div>
 
   <!-- INTRODUÇÃO -->
@@ -1155,6 +1159,27 @@ function anim(){
   parts=parts.filter(p=>p.vida>0&&p.y<cf.height+40);
   if(parts.length) requestAnimationFrame(anim); else { animando=false; cx.clearRect(0,0,cf.width,cf.height); }
 }
+
+
+/* ================== ECRÃ COMPLETO ================== */
+function emEcraCompleto(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function atualizarBtnEcra(){ const b=$('btnEcra'), on=emEcraCompleto(); b.textContent = on ? '🗗' : '⛶'; b.title = on ? 'Sair do ecrã completo' : 'Ecrã completo'; b.classList.toggle('on', on); }
+$('btnEcra').onclick = async ()=>{
+  somClique();
+  const el = document.documentElement;
+  try{
+    if(emEcraCompleto()){ await (document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen()); return; }
+    if(el.requestFullscreen) await el.requestFullscreen();
+    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else throw new Error('sem suporte');
+  }catch(e){
+    // sem suporte (ex.: iPhone) ou iframe sem permissão: abrir o jogo numa janela própria
+    if(window.top !== window.self){ const a=document.createElement('a'); a.href=location.href; a.target='_blank'; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove(); toast('O jogo abriu numa nova janela.'); }
+    else toast('Este dispositivo não permite ecrã completo. Experimenta rodar o ecrã na horizontal.');
+  }
+};
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev, ()=>{ atualizarBtnEcra(); setTimeout(()=>{ if(ecraAtual==='ecraJig') ajustarMesa(); ajustarCf(); }, 150); }));
+document.addEventListener('keydown', e=>{ if((e.key==='f'||e.key==='F') && !e.ctrlKey && !e.metaKey && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) $('btnEcra').click(); });
 
 /* ================== ARRANQUE ================== */
 document.querySelector('.intro-hero').style.backgroundImage = `linear-gradient(160deg,rgba(29,86,52,.85),rgba(47,125,79,.7)),url(${IMGS.trex})`;

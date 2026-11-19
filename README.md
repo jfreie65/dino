@@ -65,6 +65,7 @@ Se o jogo parecer cortado, aumenta o valor de `height`.
 - HTML, CSS e JavaScript simples, sem bibliotecas.
 - As peças do puzzle são desenhadas em `<canvas>` com curvas de Bézier e têm um recorte diferente em cada jogo.
 - Funciona com rato, ecrã tátil e teclado (setas no Taquin), em computador, tablet ou telemóvel.
+- Botão de ecrã completo (⛶) no canto superior direito, ou tecla **F**. Dentro de um blog, o `iframe` precisa do atributo `allowfullscreen`.
 - Os sons são gerados com a Web Audio API (sem ficheiros de som) e podem ser desligados.
 - O progresso é guardado em `localStorage`.
 - Usa os tipos de letra *Baloo 2* e *Nunito* do Google Fonts. Sem Internet, o navegador usa um tipo de letra de substituição.
